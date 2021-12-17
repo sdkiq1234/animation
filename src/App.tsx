@@ -1,70 +1,98 @@
 import styled from "styled-components";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
 
 const Wrapper = styled.div`
   height: 100vh;
   width: 100vw;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 `;
 
-const Box = styled(motion.div)`
-  width: 200px;
-  height: 200px;
+const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  background-color: rgba(255, 255, 255, 0.2);
+  width: 80vw;
+  gap: 30px;
+  margin-bottom: 100px;
+  div:nth-child(1) {
+    transform-origin: right bottom;
+  }
+  div:nth-child(2) {
+    transform-origin: left bottom;
+  }
+  div:nth-child(3) {
+    transform-origin: right top;
+  }
+  div:nth-child(4) {
+    transform-origin: left top;
+  }
+`;
 
+const Box = styled(motion.div)`
+  height: 30vh;
+  background-color: rgba(255, 255, 255, 0.8);
   border-radius: 40px;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
 `;
 
-const Circle = styled(motion.div)`
-  background-color: white;
-  height: 70px;
-  width: 70px;
-  place-self: center;
-  border-radius: 35px;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
+const Overlay = styled(motion.div)`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
-const boxVariants = {
-  start: { opacity: 0, scale: 0.5 },
-  end: {
-    scale: 1,
-    opacity: 1,
-    transition: {
-      type: "spring",
-      duration: 0.5,
-      bounce: 0.5,
-      delayChildren: 0.5,
-      staggerChildren: 0.2,
-    },
-  },
-};
+const Button = styled(motion.div)`
+  background-color:
+  font-size: 100px;
+`;
 
-const circleVariants = {
-  start: {
-    opacity: 0,
-    y: 10,
-  },
-  end: {
-    opacity: 1,
-    y: 0,
-  },
+const overlay = {
+  hidden: { backgroundColor: "rgba(0,0,0,0" },
+  visible: { backgroundColor: "rgba(0,0,0,0.5" },
+  exit: { backgroundColor: "rgba(0,0,0,0" },
 };
 
 function App() {
+  const [id, setId] = useState<null | string>(null);
   return (
     <Wrapper>
-      <Box variants={boxVariants} initial="start" animate="end">
-        <Circle variants={circleVariants} />
-        <Circle variants={circleVariants} />
-        <Circle variants={circleVariants} />
-        <Circle variants={circleVariants} />
-      </Box>
-      <motion.div></motion.div>
+      <Grid>
+        {["1", "2", "3", "4"].map((n) => (
+          <Box
+            whileHover={{ scale: 1.3, transition: { duration: 0.5 } }}
+            onClick={() => setId(n)}
+            key={n}
+            layoutId={n}
+          />
+        ))}
+      </Grid>
+      <AnimatePresence>
+        {id ? (
+          <Overlay
+            variants={overlay}
+            onClick={() => setId(null)}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            <Box
+              layoutId={id}
+              style={{
+                width: "50vw",
+                height: "50vh",
+                backgroundColor: "rgba(255, 255, 255, 1)",
+              }}
+            />
+          </Overlay>
+        ) : null}
+      </AnimatePresence>
+      <Button>Switch</Button>
     </Wrapper>
   );
 }

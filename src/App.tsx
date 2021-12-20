@@ -36,6 +36,16 @@ const Box = styled(motion.div)`
   background-color: rgba(255, 255, 255, 0.8);
   border-radius: 40px;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+const Circle = styled(motion.div)`
+  height: 150px;
+  width: 150px;
+  background-color: rgba(255, 255, 255, 1);
+  border-radius: 75px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
 `;
 
 const Overlay = styled(motion.div)`
@@ -47,9 +57,12 @@ const Overlay = styled(motion.div)`
   align-items: center;
 `;
 
-const Button = styled(motion.div)`
-  background-color:
+const Button = styled(motion.button)`
+  background-color: white;
   font-size: 100px;
+  padding: 20px;
+  border-radius: 30px;
+  border: solid black 5px;
 `;
 
 const overlay = {
@@ -58,18 +71,54 @@ const overlay = {
   exit: { backgroundColor: "rgba(0,0,0,0" },
 };
 
+const scale = {
+  boxA: {
+    scale: 1.1,
+    transition: { duration: 0.2 },
+    originX: 1,
+    originY: 1,
+  },
+  boxB: {
+    scale: 1.1,
+    transition: { duration: 0.2 },
+    originX: 0,
+    originY: 1,
+  },
+  boxC: {
+    scale: 1.1,
+    transition: { duration: 0.2 },
+    originX: 1,
+    originY: 0,
+  },
+  boxD: {
+    scale: 1.1,
+    transition: { duration: 0.2 },
+    originX: 0,
+    originY: 0,
+  },
+};
+
 function App() {
+  const data = ["boxA", "boxB", "boxC", "boxD"];
   const [id, setId] = useState<null | string>(null);
+  const [box, setBox] = useState<null | string>("boxA");
+  function randomValue(array: string[]) {
+    const random = Math.floor(Math.random() * array.length);
+    return array[random];
+  }
   return (
     <Wrapper>
       <Grid>
-        {["1", "2", "3", "4"].map((n) => (
+        {data.map((n) => (
           <Box
-            whileHover={{ scale: 1.3, transition: { duration: 0.5 } }}
+            variants={scale}
+            whileHover={n}
             onClick={() => setId(n)}
             key={n}
             layoutId={n}
-          />
+          >
+            {box === n ? <Circle layoutId="circle" /> : null}
+          </Box>
         ))}
       </Grid>
       <AnimatePresence>
@@ -92,7 +141,7 @@ function App() {
           </Overlay>
         ) : null}
       </AnimatePresence>
-      <Button>Switch</Button>
+      <Button onClick={() => setBox(randomValue(data))}>Switch</Button>
     </Wrapper>
   );
 }
